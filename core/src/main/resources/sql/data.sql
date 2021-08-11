@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS user_bank_card;
 
 CREATE TABLE users (
 	id INT AUTO_INCREMENT PRIMARY KEY,
-	user_id INT,
+	user_id INT NOT NULL,
 	name NVARCHAR(250) NOT NULL,
 	email NVARCHAR(250) NOT NULL
 );
@@ -30,7 +30,7 @@ CREATE TABLE user_bank_card (
 	cvc INT NOT NULL,
 	name NVARCHAR(250) NOT NULL,
 	amount INT NOT NULL,
-	currency NVARCHAR(50) NOT NULL
+	currency NVARCHAR(10) NOT NULL
 );
 
 INSERT INTO users (user_id, name, email) VALUES 
