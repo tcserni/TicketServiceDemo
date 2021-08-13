@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import hu.otp.mobile.common.domain.Event;
 import hu.otp.mobile.common.domain.EventDetails;
+import hu.otp.mobile.common.dto.ReservationDto;
+import hu.otp.mobile.ticket.client.CoreClient;
 import hu.otp.mobile.ticket.client.PartnerClient;
 import hu.otp.mobile.ticket.service.TicketService;
 
@@ -15,6 +17,9 @@ public class TicketServiceImpl implements TicketService {
 
 	@Autowired
 	private PartnerClient partnerClient;
+
+	@Autowired
+	private CoreClient coreClient;
 
 	@Override
 	public List<Event> queryEvents() {
@@ -27,8 +32,22 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
-	public void reserveAndPayTicket() {
-		// TODO Auto-generated method stub
+	public boolean reserveAndPayTicket(long eventId, long seatId, String userToken, String cardId, int price) {
 
+		ReservationDto reservationDto = partnerClient.reserveSeat(eventId, seatId);
+
+		if (!reservationDto.isSuccess()) {
+			// TODO: hiba kezelés
+			return false;
+		}
+
+		boolean coreResponse = coreClient.checkPaymentRequirements(userToken, cardId, price);
+
+		if (!coreResponse) {
+			// TODO: hiba kezelés
+			return false;
+		}
+
+		return true;
 	}
 }

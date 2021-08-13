@@ -11,5 +11,5 @@ public interface TicketService {
 
 	EventDetails queryEventDetails(long eventId);
 
-	void reserveAndPayTicket();
+	boolean reserveAndPayTicket(long eventId, long seatId, String userToken, String cardId, int price);
 }
