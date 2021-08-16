@@ -36,8 +36,8 @@ public class TicketController {
 
 	@PostMapping("/reserve")
 	ResponseEntity<Object> reserve(@RequestParam("eventId") long eventId, @RequestParam("seatId") long seatId,
-			@RequestParam("userToken") String userToken, @RequestParam("cardId") String cardId, @RequestParam("price") int price) {
-		return ResponseEntity.ok(ticketService.reserveAndPayTicket(eventId, seatId, userToken, cardId, price));
+			@RequestParam("userToken") String userToken, @RequestParam("cardId") String cardId) {
+		return ResponseEntity.ok(ticketService.reserveAndPayTicket(eventId, seatId, userToken, cardId));
 	}
 
 }
