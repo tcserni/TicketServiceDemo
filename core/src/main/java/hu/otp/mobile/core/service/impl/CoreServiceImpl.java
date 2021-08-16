@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import hu.otp.mobile.common.dto.CommonResultDto;
+import hu.otp.mobile.common.exceptions.OtpErrorMessages;
+import hu.otp.mobile.common.exceptions.OtpMobileException;
 import hu.otp.mobile.core.domain.User;
 import hu.otp.mobile.core.domain.UserBankCard;
 import hu.otp.mobile.core.domain.UserDevice;
@@ -59,78 +62,96 @@ public class CoreServiceImpl implements CoreService {
 	}
 
 	@Override
-	public boolean validateUserToken(String token) {
+	public CommonResultDto validateUserToken(String token) {
+
+		if (token.isEmpty()) {
+
+			log.error("User token is empty.");
+			throw new OtpMobileException(OtpErrorMessages.CORE_USER_TOKEN_EXPIRED);
+
+		}
 
 		Optional<UserToken> userTokenOpt = userTokenRepository.findByToken(token);
 
 		if (!userTokenOpt.isPresent()) {
-			// TODO: exception
+
 			log.error("UserToken not found.");
+			throw new OtpMobileException(OtpErrorMessages.CORE_USER_TOKEN_EXPIRED);
+
 		}
 
 		UserToken userToken = userTokenOpt.get();
 		UserDto userDto = userTokenDecode(userToken.getToken());
 
 		if (!userDto.getUserId().equals(userToken.getUserId())) {
-			// TODO: userId nem egyezik
-			log.error("UserId mismatch.");
+
+			log.error("UserId mismatch userToken={}.", token);
+			throw new OtpMobileException(OtpErrorMessages.CORE_INVALID_USER_TOKEN);
+
 		}
 
 		Optional<UserDevice> userDeviceOpt = userDeviceRepository.findByUserIdAndDeviceHash(userDto.getUserId(), userDto.getDeviceHash());
 
 		if (!userDeviceOpt.isPresent()) {
-			// TODO: userDevice nem egyezik
-			log.error("UserDevice mismatch.");
+
+			log.error("UserDevice mismatch userToken={}.", token);
+			throw new OtpMobileException(OtpErrorMessages.CORE_UNKNOWN_DEVICE);
+
 		}
 
 		Optional<User> userOpt = userRepository.findByUserIdAndEmail(userDto.getUserId(), userDto.getEmail());
 
 		if (!userOpt.isPresent()) {
-			// TODO: user nem egyezik
-			log.error("User data mismatch.");
+
+			log.error("User data mismatch userToken={}.", token);
+			throw new OtpMobileException(OtpErrorMessages.CORE_OWNER_CARD_MISMATCH);
+
 		}
 
-		return true;
+		return new CommonResultDto(true);
 	}
 
 	@Override
-	public boolean validateCardInfo(String token, String cardId) {
+	public CommonResultDto validateCardInfo(String token, String cardId) {
 
 		Assert.notNull(token, "Token is null.");
 
 		UserDto userDto = userTokenDecode(token);
 
 		if (validateCardOwner(userDto.getUserId(), cardId)) {
-			return true;
+			return new CommonResultDto(true);
 		} else {
-			// TODO: kártya tulaj nem egyezik
-			log.error("Card owner mismatch.");
-			return false;
+
+			log.error("Card owner mismatch userToken={}, cardId={}.", token, cardId);
+			throw new OtpMobileException(OtpErrorMessages.CORE_OWNER_CARD_MISMATCH);
+
 		}
 
 	}
 
 	@Override
-	public boolean checkCardAmount(String token, String cardId, int amount) {
+	public CommonResultDto checkCardAmount(String token, String cardId, int amount) {
 
 		Assert.notNull(token, "Token is null.");
 
 		UserDto userDto = userTokenDecode(token);
 
 		if (!validateCardOwner(userDto.getUserId(), cardId)) {
-			// TODO: kártya tulaj nem egyezik
-			log.error("Card owner mismatch.");
-			return false;
+
+			log.error("Card owner mismatch userToken={}, cardId={}.", token, cardId);
+			throw new OtpMobileException(OtpErrorMessages.CORE_OWNER_CARD_MISMATCH);
+
 		}
 
 		UserBankCard userBankCard = userBankCardRepository.findByUserIdAndCardId(userDto.getUserId(), cardId).get();
 
 		if (amount > userBankCard.getAmount()) {
-			// TODO: nincs elegendő pénz
-			log.info("Not enough.");
-			return false;
+
+			log.error("Not enough coverage userToken={}, cardId={}.", token, cardId);
+			throw new OtpMobileException(OtpErrorMessages.CORE_NOT_ENOUGH_COVERAGE);
+
 		}
 
-		return true;
+		return new CommonResultDto(true);
 	}
 }

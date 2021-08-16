@@ -1,11 +1,13 @@
 package hu.otp.mobile.core.service;
 
+import hu.otp.mobile.common.dto.CommonResultDto;
+
 public interface CoreService {
 
-	boolean validateUserToken(String token);
+	CommonResultDto validateUserToken(String token);
 
-	boolean validateCardInfo(String token, String cardId);
+	CommonResultDto validateCardInfo(String token, String cardId);
 
-	boolean checkCardAmount(String token, String cardId, int amount);
+	CommonResultDto checkCardAmount(String token, String cardId, int amount);
 
 }

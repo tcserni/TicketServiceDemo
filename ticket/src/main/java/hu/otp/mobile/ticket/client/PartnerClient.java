@@ -28,6 +28,7 @@ import hu.otp.mobile.common.domain.EventDetails;
 import hu.otp.mobile.common.dto.ReservationDto;
 import hu.otp.mobile.ticket.config.RestclientProperties;
 import hu.otp.mobile.ticket.config.SecurityProperties;
+import hu.otp.mobile.ticket.web.RestTemplateErrorHandler;
 
 @Service
 @EnableConfigurationProperties({ RestclientProperties.class, SecurityProperties.class })
@@ -60,6 +61,7 @@ public class PartnerClient {
 		String url = String.format("%s/getEvents", restclientProperties.getPartnerUrl());
 
 		RestTemplate restTemplate = restTemplate();
+		restTemplate.setErrorHandler(new RestTemplateErrorHandler());
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
@@ -75,6 +77,7 @@ public class PartnerClient {
 		String url = String.format("%s/getEvent?id=%d", restclientProperties.getPartnerUrl(), eventId);
 
 		RestTemplate restTemplate = restTemplate();
+		restTemplate.setErrorHandler(new RestTemplateErrorHandler());
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
@@ -87,10 +90,10 @@ public class PartnerClient {
 
 	public ReservationDto reserveSeat(long eventId, long seatId) {
 
-		// String url = String.format("%s/reserve?eventId=%d&seatId=%d", restclientProperties.getPartnerUrl(), eventId, seatId);
 		String url = String.format("%s/reserve", restclientProperties.getPartnerUrl());
 
 		RestTemplate restTemplate = restTemplate();
+		restTemplate.setErrorHandler(new RestTemplateErrorHandler());
 
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("eventId", eventId).queryParam("seatId", seatId);
 

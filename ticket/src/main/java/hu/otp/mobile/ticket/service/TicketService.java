@@ -4,6 +4,7 @@ import java.util.List;
 
 import hu.otp.mobile.common.domain.Event;
 import hu.otp.mobile.common.domain.EventDetails;
+import hu.otp.mobile.common.dto.ReservationDto;
 
 public interface TicketService {
 
@@ -11,5 +12,5 @@ public interface TicketService {
 
 	EventDetails queryEventDetails(long eventId);
 
-	boolean reserveAndPayTicket(long eventId, long seatId, String userToken, String cardId);
+	ReservationDto reserveAndPayTicket(long eventId, long seatId, String userToken, String cardId);
 }

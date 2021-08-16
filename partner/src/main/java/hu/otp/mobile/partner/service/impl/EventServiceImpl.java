@@ -9,6 +9,8 @@ import hu.otp.mobile.common.domain.Event;
 import hu.otp.mobile.common.domain.EventDetails;
 import hu.otp.mobile.common.domain.Seat;
 import hu.otp.mobile.common.dto.ReservationDto;
+import hu.otp.mobile.common.exceptions.OtpErrorMessages;
+import hu.otp.mobile.common.exceptions.OtpMobileException;
 import hu.otp.mobile.common.util.JsonParser;
 import hu.otp.mobile.partner.service.EventService;
 
@@ -34,15 +36,13 @@ public class EventServiceImpl implements EventService {
 
 		if (seat == null) {
 
-			// TODO: egyedi exception
 			result.setSuccess(false);
-			throw new RuntimeException();
+			throw new OtpMobileException(OtpErrorMessages.PARTNER_SEAT_NOT_EXIST);
 
 		} else if (seat.isReserved()) {
 
-			// TODO: egyedi exception
 			result.setSuccess(false);
-			throw new RuntimeException();
+			throw new OtpMobileException(OtpErrorMessages.PARTNER_SEAT_RESERVED);
 
 		} else {
 

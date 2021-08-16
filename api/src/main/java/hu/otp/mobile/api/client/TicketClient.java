@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import hu.otp.mobile.api.config.RestclientProperties;
+import hu.otp.mobile.api.web.RestTemplateErrorHandler;
 import hu.otp.mobile.common.domain.Event;
 import hu.otp.mobile.common.domain.EventDetails;
 import hu.otp.mobile.common.dto.ReservationDto;
@@ -32,6 +33,7 @@ public class TicketClient {
 		String url = String.format("%s/getEvents", restclientProperties.getTicketUrl());
 
 		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setErrorHandler(new RestTemplateErrorHandler());
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
@@ -47,6 +49,7 @@ public class TicketClient {
 		String url = String.format("%s/getEvent?id=%d", restclientProperties.getTicketUrl(), eventId);
 
 		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setErrorHandler(new RestTemplateErrorHandler());
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
@@ -62,18 +65,18 @@ public class TicketClient {
 		String url = String.format("%s/reserve", restclientProperties.getTicketUrl());
 
 		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setErrorHandler(new RestTemplateErrorHandler());
 
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("eventId", eventId).queryParam("seatId", seatId)
-				.queryParam("userToken", userToken).queryParam("cardId", cardId);
+				.queryParam("cardId", cardId);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+		headers.set("userToken", userToken);
 
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 		map.add("eventId", eventId);
 		map.add("seatId", seatId);
-		map.add("userToken", userToken);
-		map.add("cardId", cardId);
 
 		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(map, headers);
 

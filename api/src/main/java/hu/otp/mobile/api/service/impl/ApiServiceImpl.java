@@ -32,6 +32,9 @@ public class ApiServiceImpl implements ApiService {
 
 	@Override
 	public ReservationDto payTicket(long eventId, long seatId, String userToken, String cardId) {
+
+		coreClient.validateToken(userToken);
+
 		return ticketClient.payTicket(eventId, seatId, userToken, cardId);
 	}
 

@@ -15,6 +15,8 @@ import hu.otp.mobile.common.domain.Event;
 import hu.otp.mobile.common.domain.EventDetails;
 import hu.otp.mobile.common.dto.EventDetailJsonDto;
 import hu.otp.mobile.common.dto.EventJsonDto;
+import hu.otp.mobile.common.exceptions.OtpErrorMessages;
+import hu.otp.mobile.common.exceptions.OtpMobileException;
 
 public class JsonParser {
 
@@ -33,13 +35,11 @@ public class JsonParser {
 		} catch (FileNotFoundException ex) {
 
 			log.error("Resource not found with path={}", resourcePath);
-			// TODO: egyedi exceptionre cserélni
-			throw new RuntimeException(ex);
+			throw new OtpMobileException(OtpErrorMessages.PARTNER_EVENT_NOT_EXIST);
 
 		} catch (IOException e) {
 
 			log.error("Error occured during object mapping");
-			// TODO: egyedi exceptionre cserélni
 			throw new RuntimeException(e);
 		}
 

@@ -10,6 +10,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import hu.otp.mobile.api.config.RestclientProperties;
+import hu.otp.mobile.api.web.RestTemplateErrorHandler;
+import hu.otp.mobile.common.dto.CommonResultDto;
 
 @Service
 @EnableConfigurationProperties(RestclientProperties.class)
@@ -18,17 +20,18 @@ public class CoreClient {
 	@Autowired
 	private RestclientProperties restclientProperties;
 
-	public boolean validateToken(String userToken) {
+	public CommonResultDto validateToken(String userToken) {
 
 		String url = String.format("%s/userToken?userToken=%s", restclientProperties.getCoreUrl(), userToken);
 
 		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setErrorHandler(new RestTemplateErrorHandler());
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-		HttpEntity<Boolean> response = restTemplate.getForEntity(builder.build().encode().toUri(), Boolean.class);
+		HttpEntity<CommonResultDto> response = restTemplate.getForEntity(builder.build().encode().toUri(), CommonResultDto.class);
 
 		return response.getBody();
 	}
