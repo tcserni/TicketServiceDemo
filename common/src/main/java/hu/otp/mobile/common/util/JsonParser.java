@@ -53,7 +53,7 @@ public class JsonParser {
 		EventDetailJsonDto parsedJson = parseJson(eventDetailsPath, EventDetailJsonDto.class);
 		EventDetails result = null;
 
-		if (!parsedJson.equals(null)) {
+		if (parsedJson != null) {
 			result = parsedJson.getData();
 		}
 
@@ -67,7 +67,7 @@ public class JsonParser {
 		EventJsonDto parsedJson = parseJson(eventsPath, EventJsonDto.class);
 		List<Event> result = new ArrayList<>();
 
-		if (!parsedJson.equals(null)) {
+		if (parsedJson != null) {
 			result.addAll(parsedJson.getData());
 		}
 
